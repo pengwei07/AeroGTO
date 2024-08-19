@@ -57,7 +57,7 @@ this project
 You can install the required dependencies using the following command:
 
 ```
-pip install -r /path/to/requirements.txt
+pip install -r ./requirements.txt
 ```
 
 ### How to use
@@ -78,7 +78,7 @@ python main.py --config ./configs/AeroGTO_4x.json
 
 or simply run:
 ```sh
-train.sh
+run_AeroGTO.sh
 ```
 
 ## References
