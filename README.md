@@ -19,13 +19,67 @@ We briefly introduce the datasets used in the experiments.
 - Ahmed-Body (from GINO's experiments): [Ahmed-Body](https://openreview.net/forum?id=86dXbqT5Ua)
 - DrivAerNet (from DrivAerNet's experiments): [DrivAerNet](https://github.com/Mohamedelrefaie/DrivAerNet/)
 
-## Training
-
 ### Code Structure
+
+Please maintain the file structure shown below to run the script by default. The dataset folder for the baseline GINO should be located within the GINO directory.
+
+```sh
+this project
+│   ...    
+│
+└───dataset
+│   └───train
+│       │   info_*.pt
+│       │   press_*.pt
+│   └───test
+|       |   └───...
+│   └───data
+|       |   └───train
+|       |       |   centroids_*.npy
+|       |       |   areas_*.npy
+|       |   └───test
+|       |       └───...
+│   └───edges
+|       |   └───train
+|       |       |   cell_edges_*.npy
+|       |   └───test
+|       |       └───...
+│   └───dragWeight_test
+|        |    dragWeight_*.npy
+└───gino
+│   └───...
+└───model
+│   └───...
+```
+
+### Requirements
+
+You can install the required dependencies using the following command:
+
+```
+pip install -r /path/to/requirements.txt
+```
 
 ### How to use
 
-## Inference
+Use the following command to train the model:
+
+```sh
+export OMP_NUM_THREADS=32
+export NCCL_P2P_DISABLE=1 
+export TORCH_DISTRIBUTED_DEBUG=INFO
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
+export CUDA_LAUNCH_BLOCKING=1
+
+export CUDA_VISIBLE_DEVICES=0,1,2
+# ./configs/$case_name: stores the corresponding config files of a case
+python main.py --config ./configs/AeroGTO_4x.json
+```
+
+or simply run:
+```sh
+train.sh
+```
 
 ## References
 - [1] Li Z, Kovachki N, Choy C, et al. Geometry-informed neural operator for large-scale 3d pdes[J]. Advances in Neural Information Processing Systems, 2024, 36.
