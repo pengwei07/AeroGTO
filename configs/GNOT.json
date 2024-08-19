@@ -1,0 +1,57 @@
+{ 
+    "seed": 2024, 
+    "name": "Ahmed_body_GNOT",
+    "save_path": "result",
+
+    "dataset": {
+        "data_path": "/root/autodl-tmp/data/Ahmed_Body",
+        "shuffle_seed": 2024,
+        "adj_num": 8,
+        "edges_ratio": 1,
+        "node_ratio": 4,
+        "train": {
+            "batchsize": 1,
+            "shuffle": false,
+            "num_workers": 8
+            },
+        "test": {
+            "batchsize": 1,
+            "shuffle": false,
+            "num_workers": 8
+            }
+        },
+  
+    "model": {
+        "name": "GNOT",
+        "if_init": false,
+        "trunk_size": 2,
+        "branch_sizes": null,
+        "space_dim": 2,
+        "output_size": 3,
+        "n_layers": 2,
+        "n_hidden": 64,
+        "n_head": 1,
+        "n_experts":  2,
+        "n_inner":  4,
+        "mlp_layers": 2,
+        "attn_type": "linear",
+        "act": "gelu",
+        "ffn_dropout": 0.0,
+        "attn_dropout": 0.0,
+        "horiz_fourier_dim":  0
+    },
+
+    "train": {
+        "if_multi_gpu": true,
+        "epoch": 200,
+        "lr": 2.5e-4,
+        "eta_min": 2.5e-6,
+        "loss_flag": "L2_loss_norm",
+        "if_rescale": true,
+        "info": {
+            "p_mean": -179.7720,
+            "p_std": 360.8588
+            }
+    },
+    "if_save": true
+}
