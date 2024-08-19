@@ -1,0 +1,27 @@
+# we should use this to set all the set-up files (This would be more official way to follow)
+torch==1.13.1  # pip install torch==1.13.1 torchvision --extra-index-url https://download.pytorch.org/whl/cu116 --force-reinstall
+torch_scatter
+torch_sparse
+torch_geometric
+
+open3d==0.17.0   # requires torch 1.13 and CUDA=11.6
+tensorboard
+h5py
+meshio
+pyyaml
+
+neuraloperator
+tensorly
+tensorly-torch
+wandb 
+ruamel.yaml
+configmypy
+opt-einsum
+zarr
+torchtyping
+
+einops
+timm
+
+--extra-index-url https://download.pytorch.org/whl/cu116            # pytorch 1.13.1 with cu116
+--extra-index-url https://data.pyg.org/whl/torch-1.13.0+cu116.html  # for torch_scatter to use cu116
