@@ -21,13 +21,13 @@ fabric = L.Fabric(accelerator="cuda", devices=[0,1,2,3,4,5,6,7], strategy="ddp")
 # fabric = L.Fabric(accelerator="cuda", devices=1, strategy="auto")
 fabric.launch()
 
-from src.data import instantiate_datamodule
-from src.networks import instantiate_network
-from src.utils.average_meter import AverageMeter, AverageMeterDict
-from src.utils.dot_dict import DotDict, flatten_dict
-from src.losses import LpLoss
-from src.utils.loggers import init_logger
-from src.optim.schedulers import instantiate_scheduler
+from data import instantiate_datamodule
+from networks import instantiate_network
+from utils.average_meter import AverageMeter, AverageMeterDict
+from utils.dot_dict import DotDict, flatten_dict
+from losses import LpLoss
+from utils.loggers import init_logger
+from optim.schedulers import instantiate_scheduler
 
 def set_seed(seed: int = 0):
     torch.manual_seed(seed)
