@@ -19,15 +19,14 @@ from torch.cuda.amp import GradScaler
 # load
 from utils.dataset import Car_Dataset
 from model.AeroGTO import Model
-from utils.train import train, infer, validate
+from utils.train import train, validate
 from model.IPOT import EncoderProcessorDecoder
-from model.meshgrapnent import meshgrapnent
-from model.transolver import transolver
-from model.gnot import GNOT
+from model.MeshGrapeNet import meshgrapnent
+from model.Transolver import transolver
+from model.GNOT import GNOT
 
-# os.environ['CUDA_VISIBLE_DEVICES'] = '3,4,5'
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-#print(device) 
+# print(device) 
 
 def set_seed(seed: int = 0):    
     np.random.seed(seed)
@@ -48,17 +47,19 @@ def parse_args():
     
     return args
 
+# Initialize the weights of the model
 def init_weights(m):
+    # Initialize the weight and bias of the Linear module
     if isinstance(m, nn.Linear):
         torch.nn.init.xavier_uniform_(m.weight)
         m.bias.data.fill_(0.01)
+        
+    # Initialize the weight and bias of the MultiheadAttention module
     elif isinstance(m, nn.MultiheadAttention):
-        # 初始化 in_proj_weight 和 in_proj_bias
+        
         torch.nn.init.xavier_uniform_(m.in_proj_weight)
         if m.in_proj_bias is not None:
             m.in_proj_bias.data.fill_(0.01)
-
-        # out_proj 属于 nn.Linear，所以它有 weight 和 bias
         torch.nn.init.xavier_uniform_(m.out_proj.weight)
         if m.out_proj.bias is not None:
             m.out_proj.bias.data.fill_(0.01)
@@ -160,9 +161,13 @@ def main(rank, world_size, args):
     if args.model["if_init"]:
         model.apply(init_weights)
         
+    #----Infer----#
+    # load model
+    
     # checkpoint_path = "xxxxxxx.nn" 
     # checkpoint = torch.load(checkpoint_path, map_location=device)
     # model.load_state_dict(checkpoint['state_dict'])
+    # ----------- #
     
     model = DDP(model, device_ids=[rank])
     # model = DDP(model, device_ids=[rank], find_unused_parameters=True)
@@ -205,7 +210,6 @@ def main(rank, world_size, args):
     test_sampler_part = DistributedSampler(test_dataset_part, num_replicas=world_size, shuffle=False, rank=rank)
     
     test_sampler_all = DistributedSampler(test_dataset_all, num_replicas=world_size, shuffle=False, rank=rank)
-    
         
     train_dataloader = DataLoader(train_dataset, 
                         batch_size=args.dataset["train"]["batchsize"], 
@@ -224,7 +228,6 @@ def main(rank, world_size, args):
                         shuffle=args.dataset["test"]["shuffle"], 
                         sampler= test_sampler_all,
                         num_workers=args.dataset["test"]["num_workers"])
-    
     
     EPOCH = args.train["epoch"]
 
@@ -249,12 +252,7 @@ def main(rank, world_size, args):
                     print(key, torch.stack(data[key],dim=1).shape)
             break
         print("#############")
-        '''
-        node_pos torch.Size([4, 3586, 3])
-        edges torch.Size([4, 21504, 2])
-        pressure torch.Size([4, 3586, 1])
-        cells torch.Size([4, 7168, 3])     
-        '''
+
         print(f"No. of train samples: {len(train_dataset)}, No. of test samples part: {len(test_dataset_part)}, No. of test samples all: {len(test_dataset_all)}")
         print(f"No. of train batches: {len(train_dataloader)}, No. of test batches part: {len(test_dataloader_part)}, No. of test batches all: {len(test_dataloader_all)}")
         print("#############")
@@ -283,10 +281,11 @@ def main(rank, world_size, args):
         train_error, scaler = train(args, model, train_dataloader, optim, rank, scaler)
         end_time = time.time()
         
-        # 获取当前的学习率
+        # update lr
         scheduler.step()
         current_lr = scheduler.get_last_lr()[0]
         
+        # gather
         training_time = (end_time - start_time)
         current_lr = torch.tensor(current_lr, device=device)
         train_loss = torch.tensor(train_error['loss'], device=device)
@@ -302,6 +301,7 @@ def main(rank, world_size, args):
         
         training_time = gather_tensor(training_time, world_size)
         
+        # print
         if rank == 0:
             writer.add_scalar('lr/lr', current_lr, epoch)
             writer.add_scalar('Loss/train', train_loss, epoch)
@@ -320,6 +320,7 @@ def main(rank, world_size, args):
                 print(f"time pre train epoch/s:{training_time:.2f}, current_lr:{current_lr:.4e}")
                 # print("#################")
 
+        # test
         if (epoch+1) % 10 == 0 or epoch == 0 or (epoch+1) == EPOCH:
             # test part
             start_time = time.time() 
@@ -390,9 +391,6 @@ def main(rank, world_size, args):
 
     if rank == 0:
         writer.close()
-    
-    ##################    
-    # infer(args, model, test_dataloader, rank)
 
 if __name__ == "__main__":
     args = parse_args()
@@ -404,7 +402,8 @@ if __name__ == "__main__":
         
     if args.seed is not None:
         set_seed(args.seed)
-    
+        
+    #  We use DDP to train the model on multiple GPUs
     if args.train["if_multi_gpu"]:
         world_size = torch.cuda.device_count()
         print(f"Let's use {world_size} GPUs!")
