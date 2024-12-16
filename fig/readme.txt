@@ -1,1 +1,1 @@
-The overall pipeline of AeroGTO, an efficient graph-transformer operator for learning large-scale aerodynamics of 3D vehicle geometries. Taking triangular cells as an example, given the 3D mesh of a car geometry, AeroGTO can accurately predict the 3D surface pressure.
+
