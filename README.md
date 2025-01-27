@@ -1,6 +1,8 @@
 # AeroGTO (AAAI 2025)
 **AeroGTO: An Efficient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries**
 
+![](fig/pipline.jpg)
+
 ## Data
 We briefly introduce the datasets used in the experiments.
 - **Ahmed-Body** dataset [1] is an industry-standard simulation of vehicle aerodynamics based on Ahmed-body shapes [2], containing 0.12 million surface mesh faces. It consists of 551 shapes, with 500 allocated for training and 51 for testing.
