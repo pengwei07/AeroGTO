@@ -1,116 +1,125 @@
-# AeroGTO 
-**AeroGTO: An Efficient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries**
+# AeroGTO (AAAI 2025)
 
-![](fig/pipeline.jpg)
+:triangular_flag_on_post:**News** (2024.12) Our model achieved second place in the CIKM 2024 AnalytiCup competition.
 
-## Data
-We briefly introduce the datasets used in the experiments.
-- **Ahmed-Body** dataset [1] is an industry-standard simulation of vehicle aerodynamics based on Ahmed-body shapes [2], containing 0.12 million surface mesh faces. It consists of 551 shapes, with 500 allocated for training and 51 for testing.
-- **DrivAerNet** dataset [3] is a large-scale, high-fidelity CFD dataset with thousands of 3D car meshes, featuring 0.5 million surface mesh faces—60\% larger than the previously available largest public car dataset. Due to the computational cost, we randomly selected 550 cars, using 500 for training and 50 for testing.
+AeroGTO: An Efffcient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries [[Paper]](https://doi.org/10.1609/aaai.v39i18.34083)
 
-**Dataset Link**:
-- Ahmed-Body (from GINO's experiments): [Ahmed-Body](https://openreview.net/forum?id=86dXbqT5Ua)
-- DrivAerNet (from DrivAerNet's experiments): [DrivAerNet](https://github.com/Mohamedelrefaie/DrivAerNet/)
 
-![](fig/car_pressure.png)
+In the automotive industry, achieving high-precision aerodynamics requires large-scale computational fluid dynamics (CFD) simulations, which are both time-consuming and computationally expensive. 
+To capturing intricate physical correlations across complex geometries while balancing large-scale discretization with computational costs,we propose AeroGTO, an efficient graph-transformer operator designed specifically for large-scale aerodynamics with the following features:
 
-## Baselines
-We compare AeroGTO with five competitive baselines in these two car datasets. 
-- **MeshGraphNet (MGN)** [4] is a classical GNN-based model that relies on multiple chained message-passing layers. 
-- **GNOT** [5] is a scalable transformer framework with linear attention and mixture-of-expert, exemplifying the strengths of the linear-attention class. 
-- Both **Transolver** [6] and **IPOT** [7] are transformer variants for geometric learning operators with low computational complexity. 
-- **GINO** [1] is a novel neural operator for large-scale complex simulation benchmarks with FNO [8] blocks.
+- Local and Global Feature Extraction: **By combining message passing and projection-inspired attention, AeroGTO isolates and captures physical correlations at both local and global levels, enhancing interpretability.**
+- Efficient Graph Neural Network: **The frequency-enhanced GNN with kNN handling 3D geometries allows for efficient local feature extraction.**
+- Transformer Architecture with Linear Complexity: **The model’s ability to handle multi-level dependencies with linear complexity relative to mesh points allows for fast, scalable inference.**
+- Performance Gains: **AeroGTO reduces error by 7.36% on average, achieves a 10.71% improvement in drag coefficient estimation, and provides fast, low-parameter predictions with an overall R² of 0.9250 on unseen data.**
 
-## Code 
+<p align="center">
+<img src=".\pic\AeroGTO.png" height = "300" alt="" align=center />
+<br><br>
+<b>Figure 1.</b> Overview of AeroGTO.
+</p>
 
-**Due to the ongoing review process, we are providing only a portion of the source code containing the complete GINO code.
-We will release the complete code once the review is concluded. We appreciate your understanding. Ensuring the reproducibility of our results is a priority for us, and we are committed to making all necessary materials available to support this.**
 
-### Structure
+## AeroGTO v.s. Previous Operators
 
-Please maintain the file structure shown below to run the script by default. The dataset folder for the baseline GINO should be located within the GINO directory.
+Compared to previous state-of-the-art models, our model demonstrates **superior performance** and **reduces computational resource usage significantly** by leveraging attention method.
 
-```sh
-this project
-│   ...    
-│
-└───dataset
-│   └───train
-│       │   info_*.pt
-│       │   press_*.pt
-│   └───test
-|       |   └───...
-│   └───data
-|       |   └───train
-|       |       |   centroids_*.npy
-|       |       |   areas_*.npy
-|       |   └───test
-|       |       └───...
-│   └───edges
-|       |   └───train
-|       |       |   cell_edges_*.npy
-|       |   └───test
-|       |       └───...
-│   └───dragWeight_test
-|        |    dragWeight_*.npy
-└───gino
-│   └───...
-└───model
-│   └───...
+As shown below, AeroGTO can accurately capture the vehicle's geometric information, enabling precise and efficient surface pressure prediction.
+
+<p align="center">
+<img src=".\pic\pressure.png" height = "600" alt="" align=center />
+<br><br>
+<b>Figure 2.</b> Visualization of ground-truth pressure and corresponding prediction.
+</p>
+
+## Get Started
+
+Add dataset folder if it does not exist, add data to corresponding dataset. To make it easier for everyone to run the program, we have included a sample in `ShapeNet dataset` for each data collection. You can directly run the following code to test it in `code` folder:
+
+```python
+# For DP training
+bash run_dp.sh
+# For DDP training
+bash run_ddp.sh
 ```
 
-### Requirements
+You should change the environment settings in the file according to your own hardware configuration.
 
-You can install the required dependencies using the following command:
 
+
+**Data Format:**
+
+The format of our dataset (AeroGTO_Dataset) should be as follows:
+
+```python
+Node_pos = [
+    [X1, Y1, Z1],
+    [X2, Y2, Z2],
+   ...
+]
+Cells = [
+    [p1, p2, p3],
+    [p4, p5, p6],
+   ...
+]
 ```
-pip install -r ./requirements.txt
-```
+- **X,Y,Z**: (X_dim x Y_dim x Z_dim) numpy array, representing input mesh points
+- X_dim, Y_dim, Z_dim: input dimension of geometry
 
-### How to use
+- **Cells**: (N_cells x 3) numpy array, representing Geometric Cells, which contains three points. The minimum index is `0`, and the maximum value is `N_points-1`
 
-Use the following command to train the model:
+- **Note**:
+    I. For a single sample, The number of points must match, i.e, ``X.shape[0]=Y.shape[0]``, but it can vary with different samples.
+    II. If additional preprocessing is required for the data, please modify it in the corresponding dataset file in the directory `code/src`
 
-```sh
-export OMP_NUM_THREADS=32
-export NCCL_P2P_DISABLE=1 
-export TORCH_DISTRIBUTED_DEBUG=INFO
-export TORCH_DISTRIBUTED_DEBUG=DETAIL
-export CUDA_LAUNCH_BLOCKING=1
+For test, You can directly run the following code to test it in `code` folder to get infer result, saving as `*.npy` in `result` folder:
 
-export CUDA_VISIBLE_DEVICES=0,1,2
-# ./configs/$case_name: stores the corresponding config files of a case
-
-# 1. AeroGTO
-python main.py --config ./configs/AeroGTO.json
-
-# 2. GNOT
-python main.py --config ./configs/GNOT.json
-
-# 3. IPOT
-python main.py --config ./configs/IPOT.json
-
-# 4. MGN
-python main.py --config ./configs/MGN.json
-
-# 5. Transolver
-python main.py --config ./configs/Transolver.json
-
-# 6. GINO
-# see ./gino/
+```python
+# For infer on a single GPU
+bash infer.sh
 ```
 
-or simply run:
-```sh
-run_all.sh
+## Requirements
+
+- torch==2.1.0
+- torch_scatter==2.1.0
+- numpy==1.24.3
+- pandas==2.0.1
+- plyfile==0.7.4
+- h5py==3.9.0
+- vtk==9.2.6
+- tensorboardX==2.6
+
+
+## Citation
+
+If you find this repo useful, please cite our paper. 
+
+```
+Liu, P., Wang, P., Ren, X., Yuan, H., Hao, Z., Xu, C., Cai, S., & Ni, D. (2025). AeroGTO: An Efficient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries. Proceedings of the AAAI Conference on Artificial Intelligence, 39(18), 18924-18932. 
+https://doi.org/10.1609/aaai.v39i18.34083
 ```
 
-## References
-- [1] Li Z, Kovachki N, Choy C, et al. Geometry-informed neural operator for large-scale 3d pdes[J]. Advances in Neural Information Processing Systems, 2024, 36.
-- [2] Ahmed S R, Ramm G, Faltin G. Some salient features of the time-averaged ground vehicle wake[J]. SAE transactions, 1984: 473-503.
-- [3] Elrefaie M, Dai A, Ahmed F. Drivaernet: A parametric car dataset for data-driven aerodynamic design and graph-based drag prediction[J]. arXiv preprint arXiv:2403.08055, 2024.
-- [4] Pfaff T, Fortunato M, Sanchez-Gonzalez A, et al. Learning mesh-based simulation with graph networks[J]. arXiv preprint arXiv:2010.03409, 2020.
-- [5] Hao Z, Wang Z, Su H, et al. Gnot: A general neural operator transformer for operator learning[C]//International Conference on Machine Learning. PMLR, 2023: 12556-12569.
-- [6] Wu H, Luo H, Wang H, et al. Transolver: A fast transformer solver for pdes on general geometries[J]. arXiv preprint arXiv:2402.02366, 2024.
-- [7] Lee S, Oh T. Inducing Point Operator Transformer: A Flexible and Scalable Architecture for Solving PDEs[C]//Proceedings of the AAAI Conference on Artificial Intelligence. 2024, 38(1): 153-161.
-- [8] Li Z, Kovachki N, Azizzadenesheli K, et al. Fourier neural operator for parametric partial differential equations[J]. arXiv preprint arXiv:2010.08895, 2020.
+## Contact
+
+If you have any questions or want to use the code, please contact [liupw@zju.edu.cn](mailto:liupw@zju.edu.cn).
+
+## Contributing
+
+We welcome contributions to improve the dataset or project. Please submit pull requests for review.
+
+## Acknowledgement
+
+We appreciate the following contents a lot for their valuable code base or datasets:
+
+https://github.com/echowve/meshGraphNets_pytorch
+
+https://github.com/HaoZhongkai/GNOT
+
+https://github.com/thuml/Transolver
+
+https://github.com/7tl7qns7ch/IPOT
+
+https://github.com/Mohamedelrefaie/DrivAerNet
+
+https://catalog.ngc.nvidia.com/orgs/nvidia/teams/modulus/resources/modulus_datasets-ahmed_body_test
