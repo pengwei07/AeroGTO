@@ -14,7 +14,7 @@ To capturing intricate physical correlations across complex geometries while bal
 - Performance Gains: **AeroGTO reduces error by 7.36% on average, achieves a 10.71% improvement in drag coefficient estimation, and provides fast, low-parameter predictions with an overall R² of 0.9250 on unseen data.**
 
 <p align="center">
-<img src=".\pic\AeroGTO.png" height = "300" alt="" align=center />
+<img src=".\pic\AeroGTO.png" alt="" align=center />
 <br><br>
 <b>Figure 1.</b> Overview of AeroGTO.
 </p>
