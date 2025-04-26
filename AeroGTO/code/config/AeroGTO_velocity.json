@@ -1,0 +1,50 @@
+{ 
+    "seed": 2024, 
+    "name": "AeroGTO_velocity",
+    "save_path": "result/result_velocity",
+    "check_point_path": "./result/result_velocity/nn/AeroGTO_velocity_1000.nn",
+    "device": "cuda",
+
+    "task": "v_pred",
+
+    "dataset": {
+        "train_data_path": "../data/velocity/",
+        "test_data_path": "../data/velocity/",
+        "infer_data_path": "../data/velocity/",
+        "train": {
+            "batchsize": 24,
+            "shuffle": false,
+            "num_workers": 0
+            },
+        "test": {
+            "batchsize": 1,
+            "shuffle": false,
+            "num_workers": 0
+            }
+        },
+
+    "model": {
+        "name": "AeroGTO",
+        "if_init": true,
+        "N_block": 8,
+        "state_size": 1,
+        "state_embedding_dim": 128,
+        "att_embedding_dim": 128,
+        "n_head": 8,
+        "n_token": 256
+    },
+
+    "train": {
+        "if_multi_gpu": true,
+        "epoch": 1000,
+        "lr": 5e-4,
+        "eta_min": 1e-7,
+        "loss_flag": "MSE_loss",
+        "if_rescale": true,
+        "info": {
+            "mean": [0.0029, 0.0029, 17.0136],
+            "std": [1.3428, 1.2477, 6.4788]
+            }
+    },
+    "if_save": true
+}

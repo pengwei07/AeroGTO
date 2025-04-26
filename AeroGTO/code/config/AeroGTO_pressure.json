@@ -1,0 +1,51 @@
+{ 
+    "seed": 2024, 
+    "name": "AeroGTO_pressure",
+    "save_path": "result/result_pressure",
+    "check_point_path": "./result/result_pressure/nn/AeroGTO_pressure_1000.nn",
+    "device": "cuda",
+
+    "task": "p_pred",
+
+    "dataset": {
+        "train_data_path": "../data/pressure/",
+        "test_data_path": "../data/pressure/",
+        "infer_data_path": "../data/pressure/",
+        "edge_type": "single",
+        "train": {
+            "batchsize": 24,
+            "shuffle": false,
+            "num_workers": 0
+            },
+        "test": {
+            "batchsize": 1,
+            "shuffle": false,
+            "num_workers": 0
+            }
+        },
+
+    "model": {
+        "name": "AeroGTO",
+        "if_init": true,
+        "N_block": 8,
+        "state_size": 1,
+        "state_embedding_dim": 128,
+        "att_embedding_dim": 128,
+        "n_head": 8,
+        "n_token": 256
+    },
+
+    "train": {
+        "if_multi_gpu": true,
+        "epoch": 1000,
+        "lr": 5e-4,
+        "eta_min": 1e-7,
+        "loss_flag": "MSE_loss",
+        "if_rescale": true,
+        "info": {
+                "mean": -37.0900,
+                "std": 48.0955
+            }
+    },
+    "if_save": true
+}

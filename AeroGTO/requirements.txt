@@ -1,0 +1,8 @@
+torch==2.1.0
+torch_scatter==2.1.0
+numpy==1.24.3
+pandas==2.0.1
+plyfile==0.7.4
+h5py==3.9.0
+vtk==9.2.6
+tensorboardX==2.6
