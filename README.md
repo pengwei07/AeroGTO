@@ -96,8 +96,9 @@ bash infer.sh
 If you find this repo useful, please cite our paper. 
 
 ```
-Liu, P., Wang, P., Ren, X., Yuan, H., Hao, Z., Xu, C., Cai, S., & Ni, D. (2025). AeroGTO: An Efficient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries. Proceedings of the AAAI Conference on Artificial Intelligence, 39(18), 18924-18932. 
-https://doi.org/10.1609/aaai.v39i18.34083
+Liu, P., Wang, P., Ren, X., Yuan, H., Hao, Z., Xu, C., Cai, S., & Ni, D. (2025).
+ AeroGTO: An Efficient Graph-Transformer Operator for Learning Large-Scale Aerodynamics of 3D Vehicle Geometries.
+ Proceedings of the AAAI Conference on Artificial Intelligence, 39(18), 18924-18932. 
 ```
 
 ## Contact
