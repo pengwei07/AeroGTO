@@ -115,7 +115,9 @@ If you have any questions or want to use the code, please contact [liupw@zju.edu
 
 We welcome contributions to improve the dataset or project. Please submit pull requests for review.
 
-This paper uses [[PaddlePaddle]](https://github.com/PaddlePaddle/Paddle.git) as the deep learning framework. PR[https://github.com/pengwei07/AeroGTO/pull/1]
+doing list:
+- This paper uses [[PaddlePaddle]](https://github.com/PaddlePaddle/Paddle.git) as the deep learning framework. PR[https://github.com/pengwei07/AeroGTO/pull/1]
+- ...
 
 ## Acknowledgement
 
