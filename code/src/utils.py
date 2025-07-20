@@ -40,7 +40,7 @@ def collate(X):
         N, S = tensor.shape
         input['node_pos'] = torch.cat([tensor, torch.zeros(N_max - N + 1, S)], dim=-2)
         N_all[batch] = N
-        mask_i = torch.zeros(N_max)
+        mask_i = torch.zeros(N_max+1).unsqueeze(-1)
         mask_i[:N] = 1
         mask.append(mask_i)
         
